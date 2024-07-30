@@ -1,0 +1,129 @@
+﻿@page "/producto"
+@page "/producto/{id:long}"
+
+@using Client.Services.Interface
+@using SharedClasses
+@inject IProducto productoService
+@inject IMarca marcaService
+@inject ICategoria categoriaService
+@inject NavigationManager navegacion
+
+<PageTitle>Productos</PageTitle>
+<h3>@titulo</h3>
+
+<EditForm Model="@producto" OnValidSubmit="@Validar" OnInvalidSubmit="@HandleInvalidSubmit" FormName="productoForm">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="cod" class="form-label">Código</label>
+        <InputText id="cod" class="form-control" @bind-Value="producto.Code"></InputText>
+        <ValidationMessage For="@(() => producto.Code)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="desc" class="form-label">Descripción</label>
+        <InputText id="desc" class="form-control" @bind-Value="producto.Descripcion"></InputText>
+        <ValidationMessage For="@(() => producto.Descripcion)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="marc" class="form-label">Marca</label>
+        <InputSelect id="marc" class="form-select" @bind-Value="producto.IdMarca">
+            <option value="0">Seleccionar</option>
+            @foreach (var item in listMarcas)
+            {
+                <option value="@item.Id">@item.Descripcion</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => producto.IdMarca)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="cat" class="form-label">Categoría</label>
+        <InputSelect id="cat" class="form-select" @bind-Value="producto.IdCategoria">
+            <option value="0">Seleccionar</option>
+            @foreach (var item in listCategoria)
+            {
+                <option value="@item.Id">@item.Descripcion</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => producto.IdCategoria)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="cant" class="form-label">Cantidad</label>
+        <InputNumber id="cant" class="form-control" @bind-Value="producto.Cantidad"></InputNumber>
+        <ValidationMessage For="@(() => producto.Cantidad)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="pre" class="form-label">Precio</label>
+        <InputNumber id="pre" class="form-control" @bind-Value="producto.Precio"></InputNumber>
+        <ValidationMessage For="@(() => producto.Precio)" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">@btnTexto</button>
+    <a class="btn btn-secondary" href="/productos">Volver</a>
+</EditForm>
+
+
+@code {
+    private ProductoDTO producto { get; set; } = new ProductoDTO();
+    [Parameter]
+    public long id { get; set; }
+
+    string titulo = string.Empty;
+    string btnTexto = string.Empty;
+    List<MarcaDTO> listMarcas = new List<MarcaDTO>();
+    List<CategoriaDTO> listCategoria = new List<CategoriaDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (id != 0)
+        {
+            var getProducto = await productoService.GetProductoById(id);
+            if (getProducto != null)
+            {
+                producto = getProducto;
+            }
+            btnTexto = "Actualizar";
+            titulo = "Editar producto";
+        }
+        else
+        {
+            producto = new ProductoDTO();
+            btnTexto = "Guardar";
+            titulo = "Nuevo producto";
+        }
+
+        listMarcas = await marcaService.GetMarcas();
+        listCategoria = await categoriaService.GetCategoria();
+    }
+
+    private async Task Validar()
+    {
+        bool result;
+        if (id == 0)
+        {
+            result = await productoService.PostProducto(producto);
+        }
+        else
+        {
+            result = await productoService.PutProducto(producto);
+        }
+
+        if (result)
+        {
+            navegacion.NavigateTo("/");
+        }
+        else
+        {
+            Console.WriteLine("Error al guardar o actualizar el producto.");
+        }
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        Console.WriteLine("Formulario inválido.");
+        Console.WriteLine($"Producto: {producto.Code}, {producto.Descripcion}, {producto.IdMarca}, {producto.IdCategoria}, {producto.Cantidad}, {producto.Precio}");
+    }
+}

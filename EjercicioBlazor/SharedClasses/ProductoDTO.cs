@@ -4,6 +4,8 @@ namespace SharedClasses
 {
     public class ProductoDTO
     {
+        public long Id { get; set; }
+
         [Required(ErrorMessage = "El código es obligatorio.")]
         [StringLength(255, ErrorMessage = "El código no puede tener más de 255 caracteres.")]
         public string Code { get; set; } = string.Empty;

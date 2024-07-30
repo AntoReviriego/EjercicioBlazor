@@ -2,6 +2,7 @@
 using Api.Entity.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SharedClasses;
 
 namespace api.Controllers
 {
@@ -22,12 +23,20 @@ namespace api.Controllers
         {
             try
             {
-                List<Categorium> categoria = await _dbContext.Categoria.Where(x => x.Enable).ToListAsync();
+                List<CategoriaDTO> categoria = await _dbContext.Categoria.Where(x => x.Enable).Select(x => new CategoriaDTO()
+                {
+                    Id = x.Id,
+                    Descripcion = x.Descripcion,
+                    InsertDate = x.InsertDate,
+                    UpdateDate = x.UpdateDate,
+                    Enable = x.Enable
+                }).ToListAsync();
                 return Ok(categoria);
             }
             catch (Exception ex)
             {
-                return Ok(new List<Categorium>());
+                Console.WriteLine("Api GetMarcas - Error: {0}", ex.Message.ToString());
+                return Ok(new List<CategoriaDTO>());
             }
         }
     }

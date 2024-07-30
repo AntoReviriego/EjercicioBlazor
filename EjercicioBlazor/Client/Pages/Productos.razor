@@ -1,0 +1,98 @@
+﻿@page "/productos"
+
+@using CurrieTechnologies.Razor.SweetAlert2
+@using SharedClasses;
+@using Client.Services.Interface;
+@inject IProducto productoService;
+@inject SweetAlertService Swal;
+
+<PageTitle>Productos</PageTitle>
+
+<h3>Productos</h3>
+<a class="btn btn-success btn-sm mb-3" href="producto">Nuevo Producto</a>
+
+<table class="table">
+    <thead class="table-dark">
+        <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Marca</th>
+            <th>Categoria</th>
+            <th>Ingreso</th>
+            <th>Última Actualizaón</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (listProductos == null || listProductos.Count() == 0)
+        {
+
+            <tr>
+                <td colspan="8" align="center">
+                    No se encontraron resultados.
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in listProductos)
+            {
+                <tr>
+                    <td>@item.Code</td>
+                    <td>@item.Descripcion</td>
+                    <td>@item.Cantidad</td>
+                    <td>@item.Precio</td>
+                    <td>@item.Marca</td>
+                    <td>@item.Categoria</td>
+                    <td>@item.InsertDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.UpdateDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="producto/@item.Id"><i class="fa-solid fa-pencil"></i></a>
+                        <button type="button" class="btn btn-danger btn-sm ms-2" @onclick="(() => DeleteProducto(item))"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            }
+        }
+
+
+
+    </tbody>
+</table>
+
+@code {
+    List<ProductosDTO>? listProductos = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        listProductos = await productoService.GetProdutos();
+    }
+
+    private async Task DeleteProducto(ProductosDTO producto)
+    {
+        var modal = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Eliminar Producto",
+                Text = $"¿Deseas eliminar el producto: {producto.Descripcion}?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        if (modal.IsConfirmed)
+        {
+            var result = await productoService.DeleteProducto(producto);
+
+            if (result)
+            {
+                await Swal.FireAsync("Éxitos", $"Se eliminó el producto: {producto.Descripcion} éxitosamente.", "success");
+                listProductos = listProductos.FindAll(e => e.Id != producto.Id);
+            }
+            else
+            {
+                await Swal.FireAsync("Oops...", $"Error al intentar eliminar el producto: {producto.Descripcion}. Contante al Administrador.", "error");
+            }
+        }
+    }
+}

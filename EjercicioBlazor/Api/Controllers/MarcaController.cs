@@ -2,6 +2,7 @@
 using Api.Entity.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SharedClasses;
 
 namespace api.Controllers
 {
@@ -22,12 +23,21 @@ namespace api.Controllers
         {
             try
             {
-                List<Marca> marcas = await _dbContext.Marcas.Where(x => x.Enable).ToListAsync();
+                List<MarcaDTO> marcas = await _dbContext.Marcas.Where(x => x.Enable).Select(x => new MarcaDTO()
+                {
+                    Id = x.Id,
+                    Descripcion = x.Descripcion,
+                    InsertDate = x.InsertDate,
+                    UpdateDate = x.UpdateDate,
+                    Enable = x.Enable,
+
+                }).ToListAsync();
                 return Ok(marcas);
             }
             catch (Exception ex)
             {
-                return Ok(new List<Marca>());
+                Console.WriteLine("Api GetMarcas - Error: {0}", ex.Message.ToString());
+                return Ok(new List<MarcaDTO>());
             }
         }
     }
