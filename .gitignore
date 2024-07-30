@@ -1,0 +1,25 @@
+# Ignorar archivos y carpetas de Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignorar carpetas de compilación
+bin/
+obj/
+
+# Ignorar archivos de NuGet
+*.nuget.g.props
+*.nuget.g.targets
+*.nuget.dgspec.json
+project.assets.json
+project.nuget.cache
+
+# Ignorar otros archivos generados
+*.GeneratedMSBuildEditorConfig.editorconfig
+
+# Ignorar archivos de log, caché, y temporales
+*.log
+*.cache
+*.tmp
