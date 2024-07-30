@@ -49,7 +49,7 @@
     {
         try
         {
-            indicadores = await BcraService.GetIndicadoresEconomicosAsync();
+            indicadores = await BcraService.GetAPI("base_usd");
         }
         catch (Exception ex)
         {

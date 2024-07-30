@@ -14,33 +14,9 @@ namespace Client.Services
             _http = http;
         }
 
-        public async Task<List<APIClass>> GetIndicadoresEconomicosAsync()
+        public async Task<List<APIClass>> GetAPI(string urlApi)
         {
-            try
-            {
-                var request = new HttpRequestMessage(HttpMethod.Get, "https://api.estadisticasbcra.com/base");
-                string token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTM4NDQ0NDYsInR5cGUiOiJleHRlcm5hbCIsInVzZXIiOiJhbnRvcmV2aXJpZWdvQGdtYWlsLmNvbSJ9.yLrqXr9jY5ctlCX85o_2df3nDUC4uG7W_Y9WQ0rsaATmtlSIGe7IqWBuCkdP2Fldhu1fzl_4HZv0VoQWg7OLFA";
-                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                request.Headers.Add("mode", "no-cors");
-
-                var response = await _http.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var content = await response.Content.ReadAsStringAsync();
-
-                var result = JsonSerializer.Deserialize<List<APIClass>>(content);
-
-                return result;
-            }
-            catch (HttpRequestException ex)
-            {
-                Console.WriteLine($"Request error: {ex.Message}");
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Unexpected error: {ex.Message}");
-                return null;
-            }
+            return await _http.GetFromJsonAsync<List<APIClass>>($"API/GetAPI/{urlApi}");
         }
     }
 }
