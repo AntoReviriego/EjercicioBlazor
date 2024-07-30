@@ -1,7 +1,6 @@
 ﻿using Api.Entity;
 using Api.Entity.Context;
 using Api.Shared;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +23,7 @@ namespace api.Controllers
         {
             try
             {
-                List<ProductosDTO> productos = await _dbContext.Productos.Where(x => (bool)x.Enable)
+                List<ProductosDTO> productos = await _dbContext.Productos.Where(x => x.Enable)
                                                             .Include(x => x.IdMarcaNavigation)
                                                             .Include(x => x.IdCategoriaNavigation)
                                                             .Select(x => new ProductosDTO()
