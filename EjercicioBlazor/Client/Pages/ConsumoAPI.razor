@@ -1,0 +1,62 @@
+﻿@page "/consumoAPI"
+
+@using Client.Services
+@using SharedClasses
+
+@inject BRCA_APIService BcraService
+
+<PageTitle>Consumo API</PageTitle>
+<h3>ConsumoAPI</h3>
+
+<table class="table">
+    <thead class="table-dark">
+        <tr>
+            <th>Fecha en formato MySQL</th>
+            <th>Valor del indicador para esa fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (indicadores == null || indicadores.Count() == 0)
+        {
+
+            <tr>
+                <td colspan="8" align="center">
+                    No se encontraron resultados.
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in indicadores)
+            {
+                <tr>
+                    <td>@item.d</td>
+                    <td>@item.v</td>
+                </tr>
+            }
+        }
+
+
+
+    </tbody>
+</table>
+
+@code {
+    private List<APIClass> indicadores = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            indicadores = await BcraService.GetIndicadoresEconomicosAsync();
+        }
+        catch (Exception ex)
+        {
+            // Manejo de errores
+            Console.WriteLine($"Error: {ex.Message}");
+            indicadores = [];
+        }
+    }
+
+}

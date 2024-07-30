@@ -15,6 +15,8 @@ builder.Services.AddScoped<IProducto, ProductoService>();
 builder.Services.AddScoped<IMarca, MarcaService>();
 builder.Services.AddScoped<ICategoria, CategoriaService>();
 
+builder.Services.AddScoped<BRCA_APIService>();
+
 // Servicio de alerts
 builder.Services.AddSweetAlert2();
 
