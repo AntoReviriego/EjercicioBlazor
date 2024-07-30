@@ -2,11 +2,13 @@
 @page "/producto/{id:long}"
 
 @using Client.Services.Interface
+@using CurrieTechnologies.Razor.SweetAlert2
 @using SharedClasses
 @inject IProducto productoService
 @inject IMarca marcaService
 @inject ICategoria categoriaService
 @inject NavigationManager navegacion
+@inject SweetAlertService Swal;
 
 <PageTitle>Productos</PageTitle>
 <h3>@titulo</h3>
@@ -102,22 +104,28 @@
     private async Task Validar()
     {
         bool result;
+        var palabra = "";
+
         if (id == 0)
         {
+            palabra = "agregó";
             result = await productoService.PostProducto(producto);
         }
         else
         {
+            palabra = "editó";
             result = await productoService.PutProducto(producto);
         }
 
         if (result)
         {
-            navegacion.NavigateTo("/");
+
+            await Swal.FireAsync("Éxitos", $"Se {palabra} el producto: {producto.Descripcion} éxitosamente.", "success");
+            navegacion.NavigateTo("/productos");
         }
         else
         {
-            Console.WriteLine("Error al guardar o actualizar el producto.");
+            await Swal.FireAsync("Oops...", $"Error al {palabra} el producto. Contante al Administrador.", "error");
         }
     }
 
